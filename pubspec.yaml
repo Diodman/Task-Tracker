@@ -1,7 +1,7 @@
 name: task_tracker
-description: A Flutter application for tracking tasks.
+description: A Flutter application for tracking tasks and calories.
 
-publish_to: 'none' # Remove this line if you wish to publish to pub.dev
+publish_to: 'none' # Удалите эту строку, если планируете публиковать пакет на pub.dev
 
 version: 1.0.0+1
 
@@ -21,14 +21,27 @@ dependencies:
   shared_preferences: ^2.0.15
   google_fonts: ^4.0.3
   flutter_colorpicker: ^1.0.3
-  sqflite_common_ffi: ^2.1.0  # Добавлено
-
+  sqflite_common_ffi: ^2.1.0
+  table_calendar: ^3.0.8
+  lottie: ^2.2.0 # Для анимаций Lottie
+  flutter_svg: ^1.1.6 # Для SVG-иконок
+  fl_chart: ^0.55.2 # Для графиков
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
   flutter_lints: ^2.0.0
 
-
 flutter:
   uses-material-design: true
+
+  assets:
+    - assets/icons/ # Папка с SVG-иконками
+    - assets/animations/ # Папка с анимациями Lottie
+
+  fonts:
+    - family: Lato
+      fonts:
+        - asset: fonts/Lato-Regular.ttf
+        - asset: fonts/Lato-Bold.ttf
+          weight: 700

@@ -3,6 +3,9 @@ import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:flutter_colorpicker/flutter_colorpicker.dart';
 import 'package:google_fonts/google_fonts.dart';
+import 'package:flutter_animate/flutter_animate.dart';
+import 'package:lottie/lottie.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 import '../providers/task_provider.dart';
 
@@ -23,6 +26,12 @@ class SettingsPage extends StatelessWidget {
           children: [
             // Переключатель темы
             ListTile(
+              leading: SvgPicture.asset(
+                'assets/icons/theme.svg',
+                color: Theme.of(context).iconTheme.color,
+                width: 30,
+                height: 30,
+              ),
               title: Text('Темная тема', style: GoogleFonts.lato(fontSize: 18)),
               trailing: Switch(
                 value: taskProvider.isDarkMode,
@@ -30,10 +39,16 @@ class SettingsPage extends StatelessWidget {
                   taskProvider.toggleDarkMode(value);
                 },
               ),
-            ),
+            ).animate().fadeIn(duration: 500.ms, delay: 100.ms),
             const SizedBox(height: 20),
             // Выбор основного цвета
             ListTile(
+              leading: SvgPicture.asset(
+                'assets/icons/color_palette.svg',
+                color: Theme.of(context).iconTheme.color,
+                width: 30,
+                height: 30,
+              ),
               title: Text('Выберите основной цвет', style: GoogleFonts.lato(fontSize: 18)),
               trailing: CircleAvatar(
                 backgroundColor: taskProvider.primaryColor,
@@ -41,10 +56,41 @@ class SettingsPage extends StatelessWidget {
               onTap: () {
                 _showColorPicker(context, taskProvider);
               },
-            ),
+            ).animate().fadeIn(duration: 500.ms, delay: 200.ms),
             const SizedBox(height: 20),
-            // Дополнительные настройки могут быть добавлены здесь
-            // Например, выбор шрифта, настройка уведомлений и т.д.
+            // Дополнительные настройки (например, уведомления)
+            ListTile(
+              leading: SvgPicture.asset(
+                'assets/icons/notifications.svg',
+                color: Theme.of(context).iconTheme.color,
+                width: 30,
+                height: 30,
+              ),
+              title: Text('Уведомления', style: GoogleFonts.lato(fontSize: 18)),
+              trailing: Switch(
+                value: true, // Здесь можно добавить функционал для управления уведомлениями
+                onChanged: (bool value) {
+                  // Обработчик изменения состояния
+                },
+              ),
+            ).animate().fadeIn(duration: 500.ms, delay: 300.ms),
+            const SizedBox(height: 20),
+            // Показать анимацию для настроек
+            Expanded(
+              child: Center(
+                child: Animate(
+                  child: Lottie.asset(
+                    'assets/animations/settings.json',
+                    width: 200,
+                    height: 200,
+                    fit: BoxFit.cover,
+                  ),
+                  effects: [
+                    FadeEffect(duration: 500.ms, delay: 400.ms),
+                   ],
+                ),
+              ),
+            ),
           ],
         ),
       ),
