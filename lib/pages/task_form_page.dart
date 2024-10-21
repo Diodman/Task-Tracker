@@ -17,14 +17,16 @@ class _TaskFormPageState extends State<TaskFormPage> {
   final _formKey = GlobalKey<FormState>();
   late String _title;
   late String _description;
-  late DateTime? _deadline; // Добавлено
+  late DateTime? _deadline; // Добавлено для хранения даты
+  late TimeOfDay? _timeOfDay; // Добавлено для хранения времени
 
   @override
   void initState() {
     super.initState();
     _title = widget.task?.title ?? '';
     _description = widget.task?.description ?? '';
-    _deadline = widget.task?.deadline; // Добавлено
+    _deadline = widget.task?.deadline; // Инициализация даты из задачи
+    _timeOfDay = _deadline != null ? TimeOfDay.fromDateTime(_deadline!) : null; // Инициализация времени
   }
 
   @override
@@ -42,28 +44,51 @@ class _TaskFormPageState extends State<TaskFormPage> {
           key: _formKey,
           child: Column(
             children: [
-              // Поле для срока выполнения
+              // Поле для выбора даты
               TextFormField(
                 decoration: const InputDecoration(
-                  labelText: 'Срок выполнения',
+                  labelText: 'Дата выполнения',
                   border: OutlineInputBorder(),
                 ),
                 readOnly: true,
                 onTap: () async {
-                  DateTime? picked = await showDatePicker(
+                  DateTime? pickedDate = await showDatePicker(
                     context: context,
                     initialDate: _deadline ?? DateTime.now(),
                     firstDate: DateTime.now(),
                     lastDate: DateTime(2101),
                   );
-                  if (picked != null) {
+                  if (pickedDate != null) {
                     setState(() {
-                      _deadline = picked;
+                      _deadline = pickedDate;
                     });
                   }
                 },
                 controller: TextEditingController(
                   text: _deadline != null ? DateFormat('yyyy-MM-dd').format(_deadline!) : '',
+                ),
+              ),
+
+              // Поле для выбора времени
+              TextFormField(
+                decoration: const InputDecoration(
+                  labelText: 'Время выполнения',
+                  border: OutlineInputBorder(),
+                ),
+                readOnly: true,
+                onTap: () async {
+                  TimeOfDay? pickedTime = await showTimePicker(
+                    context: context,
+                    initialTime: _timeOfDay ?? TimeOfDay.now(),
+                  );
+                  if (pickedTime != null) {
+                    setState(() {
+                      _timeOfDay = pickedTime;
+                    });
+                  }
+                },
+                controller: TextEditingController(
+                  text: _timeOfDay != null ? _timeOfDay!.format(context) : '',
                 ),
               ),
 
@@ -93,16 +118,29 @@ class _TaskFormPageState extends State<TaskFormPage> {
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
+
+                    // Объединение даты и времени в один объект DateTime
+                    DateTime? finalDateTime;
+                    if (_deadline != null && _timeOfDay != null) {
+                      finalDateTime = DateTime(
+                        _deadline!.year,
+                        _deadline!.month,
+                        _deadline!.day,
+                        _timeOfDay!.hour,
+                        _timeOfDay!.minute,
+                      );
+                    }
+
                     Task newTask = Task(
                       title: _title,
                       description: _description,
-                      deadline: _deadline,
+                      deadline: finalDateTime,
                     );
 
                     if (widget.task == null) {
                       await taskProvider.addTask(newTask);
-                      if (_deadline != null && mounted) { // Проверка mounted
-                        scheduleNotification(_deadline!, newTask.title);
+                      if (finalDateTime != null && mounted) { // Проверка mounted
+                        scheduleNotification(finalDateTime, newTask.title);
                       }
                     } else {
                       Task updatedTask = Task(
@@ -110,7 +148,7 @@ class _TaskFormPageState extends State<TaskFormPage> {
                         title: _title,
                         description: _description,
                         isCompleted: widget.task!.isCompleted,
-                        deadline: _deadline,
+                        deadline: finalDateTime,
                       );
                       await taskProvider.updateTask(updatedTask);
                     }

@@ -17,7 +17,7 @@ class NotificationService {
     tz.initializeTimeZones(); // Инициализация временных зон
 
     const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('app_icon');
+        AndroidInitializationSettings('ic_launcher');
 
     const InitializationSettings initializationSettings =
         InitializationSettings(android: initializationSettingsAndroid);
@@ -37,14 +37,14 @@ class NotificationService {
     }
   }
 
-  void scheduleNotification(DateTime deadline, String taskTitle) async {
-    await requestExactAlarmPermission();  // Запрашиваем разрешение перед созданием уведомлений
+  void scheduleNotification(DateTime scheduledTime, String taskTitle) async {
+    await requestExactAlarmPermission(); // Запрашиваем разрешение перед созданием уведомлений
 
     await flutterLocalNotificationsPlugin.zonedSchedule(
       0,
       'Срок задачи!',
       'Задача "$taskTitle" скоро истекает!',
-      tz.TZDateTime.from(deadline, tz.local),
+      tz.TZDateTime.from(scheduledTime, tz.local),
       const NotificationDetails(
         android: AndroidNotificationDetails(
           'your_channel_id',
