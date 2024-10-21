@@ -1,5 +1,4 @@
 // lib/models/event.dart
-import 'package:flutter/material.dart';
 
 class Event {
   final String title;

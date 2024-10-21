@@ -26,6 +26,11 @@ dependencies:
   lottie: ^2.2.0 # Для анимаций Lottie
   flutter_svg: ^1.1.6 # Для SVG-иконок
   fl_chart: ^0.55.2 # Для графиков
+  flutter_local_notifications: ^17.2.3 # Добавлено для уведомлений
+  timezone: ^0.9.4 # Добавлено для работы с временем
+  intl: ^0.17.0
+  permission_handler: ^11.0.0
+  device_info_plus: ^10.0.0
 
 dev_dependencies:
   flutter_test:

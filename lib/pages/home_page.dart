@@ -8,7 +8,6 @@ import 'package:lottie/lottie.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
 import '../providers/task_provider.dart';
-import '../models/task.dart';
 import 'task_form_page.dart';
 import 'settings_page.dart';
 
@@ -106,7 +105,7 @@ class HomePage extends StatelessWidget {
       floatingActionButton: OpenContainer(
         transitionType: ContainerTransitionType.fade,
         transitionDuration: const Duration(milliseconds: 500),
-        openBuilder: (context, _) => const TaskFormPage(),
+        openBuilder: (context, _) => TaskFormPage(),
         closedElevation: 6.0,
         closedShape: const CircleBorder(),
         closedColor: Theme.of(context).primaryColor,

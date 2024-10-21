@@ -55,15 +55,15 @@ class _UserProfilePageState extends State<UserProfilePage> {
                 // Анимация профиля
                 Center(
                   child: Animate(
+                    effects: [
+                      FadeEffect(duration: 500.ms, delay: 100.ms),
+                    ],
                     child: Lottie.asset(
                       'assets/animations/profile.json',
                       width: 150,
                       height: 150,
                       fit: BoxFit.cover,
                     ),
-                    effects: [
-                      FadeEffect(duration: 500.ms, delay: 100.ms),
-                    ],
                   ),
                 ),
                 const SizedBox(height: 20),
@@ -225,7 +225,7 @@ class _UserProfilePageState extends State<UserProfilePage> {
               onColorChanged: (Color color) {
                 tempColor = color;
               },
-              labelTypes: [], // Заменено на labelTypes с пустым списком
+              labelTypes: const [], // Заменено на labelTypes с пустым списком
               pickerAreaHeightPercent: 0.8,
             ),
           ),

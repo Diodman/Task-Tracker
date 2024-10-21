@@ -1,10 +1,10 @@
-// lib/models/task.dart
 class Task {
   int? id;
   String title;
   String description;
   bool isCompleted;
-  DateTime date; // Добавлено
+  DateTime date; // Дата создания
+  DateTime? deadline; // Срок выполнения (добавлено)
 
   Task({
     this.id,
@@ -12,6 +12,7 @@ class Task {
     this.description = '',
     this.isCompleted = false,
     DateTime? date,
+    this.deadline, // Добавлено
   }) : date = date ?? DateTime.now();
 
   Map<String, dynamic> toMap() {
@@ -20,7 +21,8 @@ class Task {
       'title': title,
       'description': description,
       'isCompleted': isCompleted ? 1 : 0,
-      'date': date.toIso8601String(), // Добавлено
+      'date': date.toIso8601String(),
+      'deadline': deadline?.toIso8601String(), // Добавлено
     };
   }
 
@@ -30,7 +32,8 @@ class Task {
       title: map['title'],
       description: map['description'],
       isCompleted: map['isCompleted'] == 1,
-      date: DateTime.parse(map['date']), // Добавлено
+      date: DateTime.parse(map['date']),
+      deadline: map['deadline'] != null ? DateTime.parse(map['deadline']) : null, // Добавлено
     );
   }
 }

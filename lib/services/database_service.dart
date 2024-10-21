@@ -35,16 +35,17 @@ class DatabaseService {
   }
 
   Future _createDB(Database db, int version) async {
-    // Создание таблицы tasks
-    await db.execute('''
-      CREATE TABLE tasks(
-        id INTEGER PRIMARY KEY AUTOINCREMENT,
-        title TEXT,
-        description TEXT,
-        isCompleted INTEGER,
-        date TEXT
-      )
-    ''');
+  // Создание таблицы tasks
+  await db.execute('''    
+    CREATE TABLE tasks(
+      id INTEGER PRIMARY KEY AUTOINCREMENT,
+      title TEXT,
+      description TEXT,
+      isCompleted INTEGER,
+      date TEXT,
+      deadline TEXT  -- Добавлено новое поле
+    )
+  ''');
 
     // Создание таблицы user_profile
     await db.execute('''

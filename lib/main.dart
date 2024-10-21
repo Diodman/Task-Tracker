@@ -9,8 +9,11 @@ import 'pages/calorie_tracker_page.dart';
 import 'pages/calendar_page.dart';
 import 'pages/settings_page.dart';
 import 'pages/user_profile_page.dart';
+import 'notifications.dart'; // Импортируйте файл с настройкой уведомлений
 
 void main() {
+  WidgetsFlutterBinding.ensureInitialized();
+  NotificationService(); // Инициализируйте уведомления
   runApp(
     MultiProvider(
       providers: [

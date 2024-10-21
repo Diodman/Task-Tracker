@@ -79,15 +79,15 @@ class SettingsPage extends StatelessWidget {
             Expanded(
               child: Center(
                 child: Animate(
+                  effects: [
+                    FadeEffect(duration: 500.ms, delay: 400.ms),
+                   ],
                   child: Lottie.asset(
                     'assets/animations/settings.json',
                     width: 200,
                     height: 200,
                     fit: BoxFit.cover,
                   ),
-                  effects: [
-                    FadeEffect(duration: 500.ms, delay: 400.ms),
-                   ],
                 ),
               ),
             ),

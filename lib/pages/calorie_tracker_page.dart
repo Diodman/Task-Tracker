@@ -50,7 +50,7 @@ class _CalorieTrackerPageState extends State<CalorieTrackerPage> {
         ],
       ),
       body: userProfile == null
-          ? Center(
+          ? const Center(
               child: Text(
                 'Пожалуйста, заполните ваш профиль',
                 style: TextStyle(fontSize: 18),
@@ -62,17 +62,17 @@ class _CalorieTrackerPageState extends State<CalorieTrackerPage> {
                 children: [
                   Text(
                     'Базальная метаболическая скорость (BMR): ${bmr.toStringAsFixed(2)} калорий/день',
-                    style: TextStyle(fontSize: 18),
+                    style: const TextStyle(fontSize: 18),
                   ).animate().fadeIn(duration: 500.ms),
                   const SizedBox(height: 10),
                   Text(
                     'Потреблено калорий: ${totalCalories.toStringAsFixed(2)}',
-                    style: TextStyle(fontSize: 18, color: Colors.red),
+                    style: const TextStyle(fontSize: 18, color: Colors.red),
                   ).animate().fadeIn(duration: 500.ms, delay: 100.ms),
                   const SizedBox(height: 10),
                   Text(
                     'Осталось калорий: ${remainingCalories.toStringAsFixed(2)}',
-                    style: TextStyle(fontSize: 18, color: Colors.green),
+                    style: const TextStyle(fontSize: 18, color: Colors.green),
                   ).animate().fadeIn(duration: 500.ms, delay: 200.ms),
                   const SizedBox(height: 20),
                   Form(
@@ -140,7 +140,7 @@ class _CalorieTrackerPageState extends State<CalorieTrackerPage> {
                   const SizedBox(height: 30),
                   Expanded(
                     child: taskProvider.calorieEntries.isEmpty
-                        ? Center(
+                        ? const Center(
                             child: Text(
                               'Нет записей калорий',
                               style: TextStyle(fontSize: 18),
