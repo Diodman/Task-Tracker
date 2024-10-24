@@ -1,16 +1,72 @@
-# task_tracker
 
-A new Flutter project.
+# Task Tracker
 
-## Getting Started
+Task Tracker — это приложение для отслеживания задач, которое позволяет создавать, редактировать задачи, устанавливать дедлайны, а также получать уведомления за минуту до окончания срока выполнения. Также присутсвует календарь и отслеживание калорий для удобства.
 
-This project is a starting point for a Flutter application.
+## Основные возможности
 
-A few resources to get you started if this is your first Flutter project:
+- **Создание и редактирование задач**: Пользователь может добавлять задачи с указанием названия, описания и срока выполнения.
+- **Уведомления**: Приложение отправляет уведомления за одну минуту до завершения дедлайна задачи.
+- **Интеграция с локальной базой данных**: Сохранение задач локально с возможностью управления их статусом.
+- **Использование провайдера (Provider)**: Управление состоянием задач реализовано с помощью пакета `provider`.
+- **Совместимость с Android**: Приложение оптимизировано для Android, поддерживает разные разрешения экранов и плотности DPI для иконок.
 
-- [Lab: Write your first Flutter app](https://docs.flutter.dev/get-started/codelab)
-- [Cookbook: Useful Flutter samples](https://docs.flutter.dev/cookbook)
+## Установка и запуск
 
-For help getting started with Flutter development, view the
-[online documentation](https://docs.flutter.dev/), which offers tutorials,
-samples, guidance on mobile development, and a full API reference.
+Для запуска проекта на локальной машине выполните следующие шаги:
+
+### 1. Клонирование репозитория
+```bash
+git clone https://github.com/username/task-tracker.git
+```
+
+### 2. Установка зависимостей
+Перейдите в папку проекта и выполните команду для установки зависимостей:
+```bash
+cd task-tracker
+flutter pub get
+```
+
+### 3. Запуск приложения
+Чтобы запустить приложение на эмуляторе или устройстве, используйте следующую команду:
+```bash
+flutter run
+```
+
+### 4. Сборка APK
+Чтобы собрать релизную версию приложения для Android, выполните:
+```bash
+flutter build apk --release
+```
+
+## ИЛИ
+Скачайте установочный файл для андройд в releases
+
+## Структура проекта
+
+- `lib/` — Основная папка с исходным кодом проекта:
+  - `models/` — Модели данных, такие как `Task`.
+  - `providers/` — Файлы, управляющие состоянием с использованием `provider`.
+  - `screens/` — Экранные компоненты, такие как форма добавления задачи, список задач.
+  - `notifications.dart` — Настройка уведомлений с использованием `flutter_local_notifications`.
+  
+- `android/` — Конфигурационные файлы для Android-платформы, включая ресурсы и настройки сборки.
+  
+## Уведомления
+
+Приложение использует пакет `flutter_local_notifications` для отправки уведомлений. Уведомление приходит за 1 минуту до истечения срока задачи. Настройка уведомлений происходит в файле `notifications.dart`.
+
+## Используемые технологии
+
+- [Flutter](https://flutter.dev/) — для кроссплатформенной разработки.
+- [Provider](https://pub.dev/packages/provider) — для управления состоянием.
+- [flutter_local_notifications](https://pub.dev/packages/flutter_local_notifications) — для работы с локальными уведомлениями на Android.
+- [intl](https://pub.dev/packages/intl) — для форматирования дат и локализации.
+
+## Зависимости
+
+Полный список зависимостей можно найти в файле `pubspec.yaml`.
+
+## Контакты
+
+Если у вас возникли вопросы или предложения, вы можете связаться со мной по электронной почте: daniil.11022004@mail.ru.
