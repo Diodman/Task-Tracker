@@ -1,12 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
-import 'package:provider/provider.dart'; // Добавьте импорт
-import '../models/task.dart'; // Замените на свой путь
-import '../providers/task_provider.dart'; // Замените на свой путь
-import '../notifications.dart'; // Импортируйте файл с настройкой уведомлений
+import 'package:provider/provider.dart';
+import '../models/task.dart';
+import '../providers/task_provider.dart';
+import '../notifications.dart';
 
 class TaskFormPage extends StatefulWidget {
-  const TaskFormPage({Key? key, this.task}) : super(key: key); // Добавлено const
+  const TaskFormPage({Key? key, this.task}) : super(key: key);
   final Task? task;
 
   @override
@@ -17,26 +17,24 @@ class _TaskFormPageState extends State<TaskFormPage> {
   final _formKey = GlobalKey<FormState>();
   late String _title;
   late String _description;
-  late DateTime? _deadline; // Добавлено для хранения даты
-  late TimeOfDay? _timeOfDay; // Добавлено для хранения времени
+  late DateTime? _deadline;
+  late DateTime? _notificationTime; // Добавлено
 
   @override
   void initState() {
     super.initState();
     _title = widget.task?.title ?? '';
     _description = widget.task?.description ?? '';
-    _deadline = widget.task?.deadline; // Инициализация даты из задачи
-    _timeOfDay = _deadline != null ? TimeOfDay.fromDateTime(_deadline!) : null; // Инициализация времени
+    _deadline = widget.task?.deadline;
+    _notificationTime = widget.task?.deadline?.subtract(Duration(minutes: 1)); // Напоминание за минуту по умолчанию
   }
 
   @override
   Widget build(BuildContext context) {
-    final taskProvider = Provider.of<TaskProvider>(context); // Получение taskProvider
+    final taskProvider = Provider.of<TaskProvider>(context);
     return Scaffold(
       appBar: AppBar(
-        title: Text(
-          widget.task == null ? 'Добавить задачу' : 'Редактировать задачу',
-        ),
+        title: Text(widget.task == null ? 'Добавить задачу' : 'Редактировать задачу'),
       ),
       body: Padding(
         padding: const EdgeInsets.all(16.0),
@@ -44,55 +42,6 @@ class _TaskFormPageState extends State<TaskFormPage> {
           key: _formKey,
           child: Column(
             children: [
-              // Поле для выбора даты
-              TextFormField(
-                decoration: const InputDecoration(
-                  labelText: 'Дата выполнения',
-                  border: OutlineInputBorder(),
-                ),
-                readOnly: true,
-                onTap: () async {
-                  DateTime? pickedDate = await showDatePicker(
-                    context: context,
-                    initialDate: _deadline ?? DateTime.now(),
-                    firstDate: DateTime.now(),
-                    lastDate: DateTime(2101),
-                  );
-                  if (pickedDate != null) {
-                    setState(() {
-                      _deadline = pickedDate;
-                    });
-                  }
-                },
-                controller: TextEditingController(
-                  text: _deadline != null ? DateFormat('yyyy-MM-dd').format(_deadline!) : '',
-                ),
-              ),
-
-              // Поле для выбора времени
-              TextFormField(
-                decoration: const InputDecoration(
-                  labelText: 'Время выполнения',
-                  border: OutlineInputBorder(),
-                ),
-                readOnly: true,
-                onTap: () async {
-                  TimeOfDay? pickedTime = await showTimePicker(
-                    context: context,
-                    initialTime: _timeOfDay ?? TimeOfDay.now(),
-                  );
-                  if (pickedTime != null) {
-                    setState(() {
-                      _timeOfDay = pickedTime;
-                    });
-                  }
-                },
-                controller: TextEditingController(
-                  text: _timeOfDay != null ? _timeOfDay!.format(context) : '',
-                ),
-              ),
-
-              // Остальные поля формы для задачи
               TextFormField(
                 decoration: const InputDecoration(labelText: 'Название задачи'),
                 initialValue: _title,
@@ -113,34 +62,68 @@ class _TaskFormPageState extends State<TaskFormPage> {
                   _description = value!;
                 },
               ),
-
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Срок выполнения', border: OutlineInputBorder()),
+                readOnly: true,
+                onTap: () async {
+                  DateTime? picked = await showDatePicker(
+                    context: context,
+                    initialDate: _deadline ?? DateTime.now(),
+                    firstDate: DateTime.now(),
+                    lastDate: DateTime(2101),
+                  );
+                  if (picked != null) {
+                    setState(() {
+                      _deadline = picked;
+                    });
+                  }
+                },
+                controller: TextEditingController(
+                  text: _deadline != null ? DateFormat('yyyy-MM-dd').format(_deadline!) : '',
+                ),
+              ),
+              TextFormField(
+                decoration: const InputDecoration(labelText: 'Время напоминания', border: OutlineInputBorder()),
+                readOnly: true,
+                onTap: () async {
+                  TimeOfDay? picked = await showTimePicker(
+                    context: context,
+                    initialTime: _notificationTime != null
+                        ? TimeOfDay.fromDateTime(_notificationTime!)
+                        : TimeOfDay.now(),
+                  );
+                  if (picked != null) {
+                    setState(() {
+                      _notificationTime = DateTime(
+                        _deadline?.year ?? DateTime.now().year,
+                        _deadline?.month ?? DateTime.now().month,
+                        _deadline?.day ?? DateTime.now().day,
+                        picked.hour,
+                        picked.minute,
+                      );
+                    });
+                  }
+                },
+                controller: TextEditingController(
+                  text: _notificationTime != null
+                      ? DateFormat('yyyy-MM-dd HH:mm').format(_notificationTime!)
+                      : '',
+                ),
+              ),
               ElevatedButton(
                 onPressed: () async {
                   if (_formKey.currentState!.validate()) {
                     _formKey.currentState!.save();
-
-                    // Объединение даты и времени в один объект DateTime
-                    DateTime? finalDateTime;
-                    if (_deadline != null && _timeOfDay != null) {
-                      finalDateTime = DateTime(
-                        _deadline!.year,
-                        _deadline!.month,
-                        _deadline!.day,
-                        _timeOfDay!.hour,
-                        _timeOfDay!.minute,
-                      );
-                    }
-
                     Task newTask = Task(
                       title: _title,
                       description: _description,
-                      deadline: finalDateTime,
+                      deadline: _deadline,
                     );
 
                     if (widget.task == null) {
                       await taskProvider.addTask(newTask);
-                      if (finalDateTime != null && mounted) { // Проверка mounted
-                        scheduleNotification(finalDateTime, newTask.title);
+                      if (_notificationTime != null && mounted) {
+                        scheduleNotification(_notificationTime!, newTask.title);
                       }
                     } else {
                       Task updatedTask = Task(
@@ -148,11 +131,11 @@ class _TaskFormPageState extends State<TaskFormPage> {
                         title: _title,
                         description: _description,
                         isCompleted: widget.task!.isCompleted,
-                        deadline: finalDateTime,
+                        deadline: _deadline,
                       );
                       await taskProvider.updateTask(updatedTask);
                     }
-                    if (mounted) { // Проверка mounted
+                    if (mounted) {
                       Navigator.pop(context);
                     }
                   }
@@ -166,8 +149,9 @@ class _TaskFormPageState extends State<TaskFormPage> {
     );
   }
 
-  // Добавьте метод для планирования уведомления
-  void scheduleNotification(DateTime deadline, String taskTitle) {
-    NotificationService().scheduleNotification(deadline, taskTitle); // Убедитесь, что у вас есть NotificationService
-  }
+  void scheduleNotification(DateTime notificationTime, String taskTitle) {
+  final service = NotificationService();
+  service.scheduleNotification(notificationTime, taskTitle);
+}
+
 }

@@ -1,61 +1,50 @@
-import 'dart:io';
 import 'package:flutter_local_notifications/flutter_local_notifications.dart';
-import 'package:timezone/data/latest.dart' as tz;
+import 'package:intl/intl.dart';
 import 'package:timezone/timezone.dart' as tz;
-import 'package:permission_handler/permission_handler.dart';
-import 'package:device_info_plus/device_info_plus.dart';
+import 'package:timezone/data/latest.dart' as tz_data;
+import 'package:flutter/foundation.dart'; // Для debugPrint
 
 class NotificationService {
-  final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
-      FlutterLocalNotificationsPlugin();
+  final FlutterLocalNotificationsPlugin _notificationsPlugin = FlutterLocalNotificationsPlugin();
 
   NotificationService() {
-    initializeNotifications();
+    _initializeNotifications();
   }
 
-  void initializeNotifications() async {
-    tz.initializeTimeZones(); // Инициализация временных зон
+  void _initializeNotifications() {
+    tz_data.initializeTimeZones(); // Инициализация часовых поясов
 
-    const AndroidInitializationSettings initializationSettingsAndroid =
-        AndroidInitializationSettings('ic_launcher');
+    const AndroidInitializationSettings androidInitSettings = AndroidInitializationSettings('@mipmap/ic_launcher');
+    const InitializationSettings initSettings = InitializationSettings(android: androidInitSettings);
 
-    const InitializationSettings initializationSettings =
-        InitializationSettings(android: initializationSettingsAndroid);
-
-    await flutterLocalNotificationsPlugin.initialize(initializationSettings);
+    _notificationsPlugin.initialize(initSettings);
   }
 
-  Future<void> requestExactAlarmPermission() async {
-    if (Platform.isAndroid) {
-      DeviceInfoPlugin deviceInfo = DeviceInfoPlugin();
-      AndroidDeviceInfo androidInfo = await deviceInfo.androidInfo;
-      if (androidInfo.version.sdkInt >= 33) {
-        if (await Permission.scheduleExactAlarm.isDenied) {
-          await Permission.scheduleExactAlarm.request();
-        }
-      }
-    }
-  }
+  Future<void> scheduleNotification(DateTime notificationTime, String taskTitle) async {
+    final tz.TZDateTime scheduledTime = tz.TZDateTime.from(notificationTime, tz.local);
 
-  void scheduleNotification(DateTime scheduledTime, String taskTitle) async {
-    await requestExactAlarmPermission(); // Запрашиваем разрешение перед созданием уведомлений
-
-    await flutterLocalNotificationsPlugin.zonedSchedule(
-      0,
-      'Срок задачи!',
-      'Задача "$taskTitle" скоро истекает!',
-      tz.TZDateTime.from(scheduledTime, tz.local),
-      const NotificationDetails(
-        android: AndroidNotificationDetails(
-          'your_channel_id',
-          'your_channel_name',
-          channelDescription: 'Описание канала для уведомлений о сроках задач',
+    try {
+      await _notificationsPlugin.zonedSchedule(
+        0, // ID уведомления
+        'Напоминание о задаче',
+        'Задача "$taskTitle" запланирована на ${DateFormat('yyyy-MM-dd HH:mm').format(notificationTime)}!',
+        scheduledTime,
+        const NotificationDetails(
+          android: AndroidNotificationDetails(
+            'task_channel', 
+            'Task Notifications', 
+            channelDescription: 'Уведомления о задачах',
+            importance: Importance.max,
+            priority: Priority.high,
+          ),
         ),
-      ),
-      androidScheduleMode: AndroidScheduleMode.exact,
-      uiLocalNotificationDateInterpretation:
-          UILocalNotificationDateInterpretation.absoluteTime,
-      matchDateTimeComponents: DateTimeComponents.dateAndTime,
-    );
+        androidScheduleMode: AndroidScheduleMode.exactAllowWhileIdle,
+        uiLocalNotificationDateInterpretation: UILocalNotificationDateInterpretation.absoluteTime,
+        matchDateTimeComponents: DateTimeComponents.time,
+      );
+      debugPrint('Уведомление запланировано на ${scheduledTime.toString()}');
+    } catch (e) {
+      debugPrint('Ошибка при создании уведомления: $e');
+    }
   }
 }
